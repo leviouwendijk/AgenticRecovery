@@ -1,27 +1,58 @@
 // swift-tools-version: 6.3
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
     name: "AgenticRecovery",
+    platforms: [
+        .macOS(.v13),
+    ],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "AgenticRecovery",
-            targets: ["AgenticRecovery"]
+            targets: [
+                "AgenticRecovery",
+            ]
+        ),
+        .executable(
+            name: "arecovtest",
+            targets: [
+                "AgenticRecoveryTestFlows",
+            ]
+        ),
+    ],
+    dependencies: [
+        .package(
+            url: "https://github.com/leviouwendijk/Primitives.git",
+            branch: "master"
+        ),
+        .package(
+            url: "https://github.com/leviouwendijk/TestFlows.git",
+            branch: "master"
         ),
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "AgenticRecovery"
+            name: "AgenticRecovery",
+            dependencies: [
+                .product(
+                    name: "Primitives",
+                    package: "Primitives"
+                ),
+            ]
         ),
-        .testTarget(
-            name: "AgenticRecoveryTests",
-            dependencies: ["AgenticRecovery"]
+        .executableTarget(
+            name: "AgenticRecoveryTestFlows",
+            dependencies: [
+                "AgenticRecovery",
+                .product(
+                    name: "TestFlows",
+                    package: "TestFlows"
+                ),
+            ]
         ),
     ],
-    swiftLanguageModes: [.v6]
+    swiftLanguageModes: [
+        .v6,
+    ]
 )
