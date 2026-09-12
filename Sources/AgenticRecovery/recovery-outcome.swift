@@ -8,6 +8,7 @@ public extension Recovery {
         case recovered
         case failed
         case propagated
+        case suspended
         case aborted
         case exhausted
     }

@@ -114,12 +114,16 @@ let recoverySemanticFlows: [TestFlow] = [
         let policy = Recovery.Policy(
             rules: [
                 .init(
-                    kind: .structured_output_invalid,
+                    match: .init(
+                        kind: .structured_output_invalid
+                    ),
                     plan: genericPlan
                 ),
                 .init(
-                    kind: .structured_output_invalid,
-                    stage: .decoding,
+                    match: .init(
+                        kind: .structured_output_invalid,
+                        stage: .decoding
+                    ),
                     plan: decodingPlan
                 ),
             ]

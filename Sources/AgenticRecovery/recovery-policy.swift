@@ -9,17 +9,14 @@ public extension Recovery {
             Codable,
             Hashable
         {
-            public let kind: Kind
-            public let stage: Stage?
+            public let match: Match
             public let plan: Plan
 
             public init(
-                kind: Kind,
-                stage: Stage? = nil,
+                match: Match,
                 plan: Plan
             ) {
-                self.kind = kind
-                self.stage = stage
+                self.match = match
                 self.plan = plan
             }
         }
@@ -32,20 +29,44 @@ public extension Recovery {
             self.rules = rules
         }
 
+        /// Resolves the most specific matching rule.
+        ///
+        /// Rules with more constrained match dimensions take precedence.
+        /// Equal-specificity ties preserve declaration order.
+        public func rule(
+            for incident: Incident
+        ) -> Rule? {
+            var selected: Rule?
+            var selectedSpecificity: UInt?
+
+            for rule in rules {
+                guard rule.match.matches(
+                    incident
+                ) else {
+                    continue
+                }
+
+                let specificity = rule.match.specificity
+
+                if let selectedSpecificity,
+                   specificity <= selectedSpecificity
+                {
+                    continue
+                }
+
+                selected = rule
+                selectedSpecificity = specificity
+            }
+
+            return selected
+        }
+
         public func plan(
             for incident: Incident
         ) -> Plan? {
-            if let exact = rules.first(where: {
-                $0.kind == incident.kind
-                    && $0.stage == incident.stage
-            }) {
-                return exact.plan
-            }
-
-            return rules.first(where: {
-                $0.kind == incident.kind
-                    && $0.stage == nil
-            })?.plan
+            rule(
+                for: incident
+            )?.plan
         }
     }
 }
