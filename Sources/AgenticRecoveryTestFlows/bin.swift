@@ -188,5 +188,5 @@ enum AgenticRecoveryFlowSuite: TestFlowRegistry {
                 ),
             ]
         },
-    ]
+    ] + recoverySemanticFlows
 }
