@@ -1,4 +1,17 @@
 public extension Recovery {
+    struct AttemptPermit:
+        Sendable,
+        Hashable
+    {
+        public let number: UInt
+
+        fileprivate init(
+            number: UInt
+        ) {
+            self.number = number
+        }
+    }
+
     struct Limit:
         Sendable,
         Codable,
@@ -12,11 +25,16 @@ public extension Recovery {
             self.maximumAttempts = maximumAttempts
         }
 
-        public func allows(
-            attemptNumber: UInt
-        ) -> Bool {
-            attemptNumber > 0
-                && attemptNumber <= maximumAttempts
+        public func nextAttempt(
+            after completedAttempts: UInt
+        ) -> AttemptPermit? {
+            guard completedAttempts < maximumAttempts else {
+                return nil
+            }
+
+            return AttemptPermit(
+                number: completedAttempts + 1
+            )
         }
 
         public static let once = Self(

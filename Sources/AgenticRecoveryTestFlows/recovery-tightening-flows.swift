@@ -66,7 +66,7 @@ let recoveryTighteningFlows: [TestFlow] = [
                         kind: .transport_transient,
                         stage: .execution,
                         scope: .inference,
-                        effectState: .none,
+                        effectState: Recovery.EffectState.none,
                         retrySafety: .safe
                     ),
                     plan: safeInferencePlan
@@ -87,7 +87,7 @@ let recoveryTighteningFlows: [TestFlow] = [
         let safeInference = Recovery.Incident(
             kind: .transport_transient,
             stage: .execution,
-            effectState: .none,
+            effectState: Recovery.EffectState.none,
             retrySafety: .safe,
             scope: .init(
                 kind: .inference,
@@ -205,60 +205,75 @@ let recoveryTighteningFlows: [TestFlow] = [
             total: 6
         )
 
-        try Expect.equal(
-            budget.allowsNextAttempt(
+        let permit = try Expect.notNil(
+            budget.nextAttempt(
                 after: .init(
                     incidentAttempts: 1,
                     scopeAttempts: 3,
                     totalAttempts: 5
                 )
             ),
-            true,
-            "budget allows an attempt while every bound has capacity"
+            "budget constructs a permit while every bound has capacity"
+        )
+
+        try Expect.equal(
+            permit.usage.incidentAttempts,
+            2,
+            "permit carries post-consumption incident usage"
         )
         try Expect.equal(
-            budget.allowsNextAttempt(
+            permit.usage.scopeAttempts,
+            4,
+            "permit carries post-consumption scope usage"
+        )
+        try Expect.equal(
+            permit.usage.totalAttempts,
+            6,
+            "permit carries post-consumption total usage"
+        )
+        try Expect.equal(
+            budget.nextAttempt(
                 after: .init(
                     incidentAttempts: 2,
                     scopeAttempts: 3,
                     totalAttempts: 5
                 )
-            ),
-            false,
-            "per-incident exhaustion blocks another recovery attempt"
+            ) == nil,
+            true,
+            "per-incident exhaustion prevents permit construction"
         )
         try Expect.equal(
-            budget.allowsNextAttempt(
+            budget.nextAttempt(
                 after: .init(
                     incidentAttempts: 1,
                     scopeAttempts: 4,
                     totalAttempts: 5
                 )
-            ),
-            false,
-            "per-scope exhaustion blocks another recovery attempt"
+            ) == nil,
+            true,
+            "per-scope exhaustion prevents permit construction"
         )
         try Expect.equal(
-            budget.allowsNextAttempt(
+            budget.nextAttempt(
                 after: .init(
                     incidentAttempts: 1,
                     scopeAttempts: 3,
                     totalAttempts: 6
                 )
-            ),
-            false,
-            "total exhaustion blocks another recovery attempt"
+            ) == nil,
+            true,
+            "total exhaustion prevents permit construction"
         )
         try Expect.equal(
-            Recovery.Budget.unlimited.allowsNextAttempt(
+            Recovery.Budget.unlimited.nextAttempt(
                 after: .init(
                     incidentAttempts: 100,
                     scopeAttempts: 100,
                     totalAttempts: 100
                 )
-            ),
+            ) != nil,
             true,
-            "unlimited budget imposes no recovery bound"
+            "unlimited budget can always construct another permit"
         )
         try Expect.equal(
             Recovery.Outcome.suspended.rawValue,

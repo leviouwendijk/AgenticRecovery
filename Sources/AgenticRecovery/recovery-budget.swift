@@ -24,6 +24,19 @@ public extension Recovery {
             }
         }
 
+        public struct Permit:
+            Sendable,
+            Hashable
+        {
+            public let usage: Usage
+
+            fileprivate init(
+                usage: Usage
+            ) {
+                self.usage = usage
+            }
+        }
+
         public let perIncident: UInt?
         public let perScope: UInt?
         public let total: UInt?
@@ -38,31 +51,43 @@ public extension Recovery {
             self.total = total
         }
 
-        /// Returns whether another recovery attempt may be consumed.
-        ///
-        /// Usage represents attempts already consumed at each level.
-        public func allowsNextAttempt(
+        public func nextAttempt(
             after usage: Usage
-        ) -> Bool {
+        ) -> Permit? {
+            guard usage.incidentAttempts < UInt.max,
+                  usage.scopeAttempts < UInt.max,
+                  usage.totalAttempts < UInt.max
+            else {
+                return nil
+            }
+
+            let next = Usage(
+                incidentAttempts: usage.incidentAttempts + 1,
+                scopeAttempts: usage.scopeAttempts + 1,
+                totalAttempts: usage.totalAttempts + 1
+            )
+
             if let perIncident,
-               usage.incidentAttempts >= perIncident
+               next.incidentAttempts > perIncident
             {
-                return false
+                return nil
             }
 
             if let perScope,
-               usage.scopeAttempts >= perScope
+               next.scopeAttempts > perScope
             {
-                return false
+                return nil
             }
 
             if let total,
-               usage.totalAttempts >= total
+               next.totalAttempts > total
             {
-                return false
+                return nil
             }
 
-            return true
+            return Permit(
+                usage: next
+            )
         }
 
         public static let unlimited = Self()

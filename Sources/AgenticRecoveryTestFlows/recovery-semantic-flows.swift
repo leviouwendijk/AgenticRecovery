@@ -161,19 +161,24 @@ let recoverySemanticFlows: [TestFlow] = [
             2,
             "recovery attempts remain independently bounded"
         )
-        try Expect.equal(
-            first.limit.allows(
-                attemptNumber: 2
+        let finalPermit = try Expect.notNil(
+            first.limit.nextAttempt(
+                after: 1
             ),
-            true,
-            "limit accepts its final permitted attempt"
+            "limit constructs its final permitted recovery attempt"
+        )
+
+        try Expect.equal(
+            finalPermit.number,
+            2,
+            "constructed permit carries the final legal attempt number"
         )
         try Expect.equal(
-            first.limit.allows(
-                attemptNumber: 3
-            ),
-            false,
-            "limit rejects attempts beyond its bound"
+            first.limit.nextAttempt(
+                after: 2
+            ) == nil,
+            true,
+            "exhausted limit cannot construct another recovery attempt"
         )
 
         return [
