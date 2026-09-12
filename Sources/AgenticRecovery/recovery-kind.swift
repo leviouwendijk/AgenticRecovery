@@ -1,3 +1,4 @@
+import Macros
 import Primitives
 
 public extension Recovery {
@@ -12,38 +13,17 @@ public extension Recovery {
     }
 }
 
+@StringIdentifiers
 public extension Recovery.Kind {
-    static let transport_transient = Self(
-        rawValue: "transport_transient"
-    )
-    static let rate_limited = Self(
-        rawValue: "rate_limited"
-    )
-    static let route_unavailable = Self(
-        rawValue: "route_unavailable"
-    )
-    static let structured_output_invalid = Self(
-        rawValue: "structured_output_invalid"
-    )
-    static let validation_failed = Self(
-        rawValue: "validation_failed"
-    )
-    static let authorization_required = Self(
-        rawValue: "authorization_required"
-    )
-    static let precondition_failed = Self(
-        rawValue: "precondition_failed"
-    )
-    static let conflict = Self(
-        rawValue: "conflict"
-    )
-    static let outcome_unknown = Self(
-        rawValue: "outcome_unknown"
-    )
-    static let cancelled = Self(
-        rawValue: "cancelled"
-    )
-    static let invariant_violation = Self(
-        rawValue: "invariant_violation"
-    )
+    static var transport_transient: Self
+    static var rate_limited: Self
+    static var route_unavailable: Self
+    static var structured_output_invalid: Self
+    static var validation_failed: Self
+    static var authorization_required: Self
+    static var precondition_failed: Self
+    static var conflict: Self
+    static var outcome_unknown: Self
+    static var cancelled: Self
+    static var invariant_violation: Self
 }
