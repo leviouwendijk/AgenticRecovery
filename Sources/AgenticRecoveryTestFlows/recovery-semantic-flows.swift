@@ -1,6 +1,33 @@
 import AgenticRecovery
+import Errors
 import Foundation
 import TestFlows
+
+private struct RecoveryDiagnosticFixtureError:
+    SemanticError
+{
+    let errorPresentation = ErrorPresentation(
+        title: "Provider unavailable",
+        message: "The fixture provider became unavailable.",
+        reason: "The connection ended before a response was received."
+    )
+
+    let errorIdentity = ErrorIdentity(
+        namespace: "agentic.recovery.fixture",
+        code: "provider_unavailable"
+    )
+
+    let errorDiagnosticFields: [ErrorDiagnosticField] = [
+        .init(
+            key: .endpoint,
+            value: "/fixture"
+        ),
+        .init(
+            key: .attempt,
+            value: 2
+        ),
+    ]
+}
 
 let recoverySemanticFlows: [TestFlow] = [
     TestFlow(
@@ -189,6 +216,127 @@ let recoverySemanticFlows: [TestFlow] = [
             .field(
                 "maximum_attempts",
                 String(first.limit.maximumAttempts)
+            ),
+        ]
+    },
+    TestFlow(
+        "recovery-structured-error-evidence",
+        tags: [
+            "agentic-recovery",
+            "errors",
+            "incident",
+            "attempt",
+            "report",
+        ]
+    ) {
+        let error = RecoveryDiagnosticFixtureError()
+        let incident = Recovery.Incident(
+            capturing: error,
+            kind: .transport_transient,
+            stage: .execution,
+            effectState: .none,
+            retrySafety: .safe,
+            scope: .init(
+                kind: .adapter,
+                identifier: "fixture-provider"
+            ),
+            metadata: [
+                "provider": "fixture",
+            ]
+        )
+        let attempt = Recovery.Attempt(
+            capturing: error,
+            number: 1,
+            action: .retry_same_operation
+        )
+
+        let incidentReport = try Expect.notNil(
+            incident.report,
+            "capturing incident retains the structured ErrorReport"
+        )
+        let attemptReport = try Expect.notNil(
+            attempt.report,
+            "failed recovery attempt retains its structured ErrorReport"
+        )
+
+        try Expect.equal(
+            incident.message,
+            error.errorPresentation.message,
+            "incident uses the captured presentation message by default"
+        )
+        try Expect.equal(
+            incidentReport.diagnostic.identity,
+            error.errorIdentity,
+            "incident preserves semantic error identity"
+        )
+        try Expect.equal(
+            incidentReport.diagnostic.fields,
+            error.errorDiagnosticFields,
+            "incident preserves structured diagnostic fields"
+        )
+        try Expect.equal(
+            attempt.outcome,
+            .failed,
+            "capturing attempt defaults to a failed recovery outcome"
+        )
+        try Expect.equal(
+            attemptReport,
+            incidentReport,
+            "incident and attempt independently capture equivalent durable error evidence"
+        )
+
+        let record = Recovery.Record(
+            incident: incident,
+            plan: .init(
+                steps: [
+                    .init(
+                        action: .retry_same_operation,
+                        limit: .once
+                    ),
+                ]
+            ),
+            attempts: [
+                attempt,
+            ],
+            outcome: .failed
+        )
+        let persisted = try JSONDecoder().decode(
+            Recovery.Record.self,
+            from: JSONEncoder().encode(
+                record
+            )
+        )
+
+        try Expect.equal(
+            persisted,
+            record,
+            "recovery records preserve ErrorReport evidence through Codable persistence"
+        )
+        try Expect.equal(
+            persisted.incident.report?.diagnostic.identity,
+            error.errorIdentity,
+            "persisted incident retains structured diagnostic identity"
+        )
+        try Expect.equal(
+            persisted.attempts.first?.report?.diagnostic.identity,
+            error.errorIdentity,
+            "persisted recovery attempt retains structured diagnostic identity"
+        )
+
+        return [
+            .field(
+                "incident_identity",
+                incidentReport.diagnostic.identity?.code
+                    ?? "none"
+            ),
+            .field(
+                "attempt_identity",
+                attemptReport.diagnostic.identity?.code
+                    ?? "none"
+            ),
+            .field(
+                "persisted",
+                String(persisted == record)
             ),
         ]
     },

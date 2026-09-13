@@ -27,6 +27,10 @@ let package = Package(
             branch: "master"
         ),
         .package(
+            url: "https://github.com/leviouwendijk/Errors.git",
+            branch: "master"
+        ),
+        .package(
             url: "https://github.com/leviouwendijk/Macros.git",
             branch: "master"
         ),
@@ -44,6 +48,10 @@ let package = Package(
                     package: "Primitives"
                 ),
                 .product(
+                    name: "Errors",
+                    package: "Errors"
+                ),
+                .product(
                     name: "Macros",
                     package: "Macros"
                 ),
@@ -53,6 +61,10 @@ let package = Package(
             name: "AgenticRecoveryTestFlows",
             dependencies: [
                 "AgenticRecovery",
+                .product(
+                    name: "Errors",
+                    package: "Errors"
+                ),
                 .product(
                     name: "TestFlows",
                     package: "TestFlows"

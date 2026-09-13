@@ -1,5 +1,5 @@
 {
-  "originHash" : "2923c4196921d1605aa7dcbb75e47e25e4b63a6c8748e5c81fc9bb167fb3e1c8",
+  "originHash" : "3fe6dcd19e9eccfa32d57f00527ea896214aa9a668aba497de32b8092ee3d7b7",
   "pins" : [
     {
       "identity" : "ansi",
@@ -44,6 +44,15 @@
       "state" : {
         "branch" : "master",
         "revision" : "30ec6798f883b91f697d060bb001e0e4f7a09225"
+      }
+    },
+    {
+      "identity" : "errors",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/leviouwendijk/Errors.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "72d3aaf1203e3443df34ac4bef61683d5285eb25"
       }
     },
     {
