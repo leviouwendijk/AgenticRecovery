@@ -275,9 +275,9 @@ let recoverySemanticFlows: [TestFlow] = [
             "incident preserves structured diagnostic fields"
         )
         try Expect.equal(
-            attempt.outcome,
+            attempt.status,
             .failed,
-            "capturing attempt defaults to a failed recovery outcome"
+            "capturing attempt defaults to failed action status"
         )
         try Expect.equal(
             attemptReport,
@@ -377,13 +377,13 @@ let recoverySemanticFlows: [TestFlow] = [
                 .init(
                     number: 1,
                     action: .wait_then_retry,
-                    outcome: .failed,
+                    status: .failed,
                     message: "provider remained rate limited"
                 ),
                 .init(
                     number: 2,
                     action: .wait_then_retry,
-                    outcome: .recovered
+                    status: .succeeded
                 ),
             ],
             outcome: .recovered
@@ -419,6 +419,127 @@ let recoverySemanticFlows: [TestFlow] = [
             .field(
                 "outcome",
                 persisted.outcome.rawValue
+            ),
+        ]
+    },
+    TestFlow(
+        "recovery-state",
+        tags: [
+            "agentic-recovery",
+            "state",
+            "reconciliation",
+        ]
+    ) {
+        let applied = Recovery.State(
+            reconciled: .applied
+        )
+        let notApplied = Recovery.State(
+            reconciled: .not_applied
+        )
+        let unknown = Recovery.State(
+            reconciled: .unknown
+        )
+
+        try Expect.equal(
+            applied.retry,
+            .unsafe,
+            "applied effects cannot be retried"
+        )
+        try Expect.equal(
+            notApplied.retry,
+            .safe,
+            "definitely unapplied effects may be retried"
+        )
+        try Expect.equal(
+            unknown.retry,
+            .requires_reconciliation,
+            "unknown effects remain non-retryable"
+        )
+
+        let incident = Recovery.Incident(
+            kind: .outcome_unknown,
+            stage: .execution,
+            effectState: .unknown,
+            retrySafety: .requires_reconciliation,
+            scope: .init(
+                kind: .tool,
+                identifier: "fixture-mutation"
+            ),
+            message: "mutation outcome is unknown"
+        )
+        let attempt = Recovery.Attempt(
+            number: 1,
+            action: .reconcile,
+            status: .succeeded,
+            state: applied
+        )
+        let record = Recovery.Record(
+            incident: incident,
+            plan: .init(
+                steps: [
+                    .init(
+                        action: .reconcile,
+                        limit: .once
+                    ),
+                ]
+            ),
+            attempts: [
+                attempt,
+            ],
+            state: applied,
+            outcome: .failed
+        )
+
+        try Expect.equal(
+            attempt.status,
+            .succeeded,
+            "reconciliation action may succeed independently of the whole recovery"
+        )
+        try Expect.equal(
+            attempt.state,
+            applied,
+            "attempt records the state it established"
+        )
+        try Expect.equal(
+            record.state,
+            applied,
+            "record exposes the authoritative final state"
+        )
+        try Expect.equal(
+            record.outcome,
+            .failed,
+            "recovery may fail even after proving the mutation applied"
+        )
+
+        let persisted = try JSONDecoder().decode(
+            Recovery.Record.self,
+            from: JSONEncoder().encode(
+                record
+            )
+        )
+
+        try Expect.equal(
+            persisted,
+            record,
+            "recovery state survives Codable persistence"
+        )
+
+        return [
+            .field(
+                "status",
+                attempt.status.rawValue
+            ),
+            .field(
+                "effect",
+                record.state.effect.rawValue
+            ),
+            .field(
+                "retry",
+                record.state.retry.rawValue
+            ),
+            .field(
+                "outcome",
+                record.outcome.rawValue
             ),
         ]
     },

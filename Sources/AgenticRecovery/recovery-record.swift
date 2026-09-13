@@ -7,7 +7,22 @@ public extension Recovery {
         public let incident: Incident
         public let plan: Plan?
         public let attempts: [Attempt]
+        public let state: State
         public let outcome: Outcome
+
+        public init(
+            incident: Incident,
+            plan: Plan?,
+            attempts: [Attempt],
+            state: State,
+            outcome: Outcome
+        ) {
+            self.incident = incident
+            self.plan = plan
+            self.attempts = attempts
+            self.state = state
+            self.outcome = outcome
+        }
 
         public init(
             incident: Incident,
@@ -15,10 +30,13 @@ public extension Recovery {
             attempts: [Attempt],
             outcome: Outcome
         ) {
-            self.incident = incident
-            self.plan = plan
-            self.attempts = attempts
-            self.outcome = outcome
+            self.init(
+                incident: incident,
+                plan: plan,
+                attempts: attempts,
+                state: incident.state,
+                outcome: outcome
+            )
         }
     }
 }

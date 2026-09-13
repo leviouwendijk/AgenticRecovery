@@ -6,23 +6,36 @@ public extension Recovery {
         Codable,
         Hashable
     {
+        public enum Status:
+            String,
+            Sendable,
+            Codable,
+            Hashable
+        {
+            case succeeded
+            case failed
+        }
+
         /// One-based attempt number within the selected recovery step.
         public let number: UInt
         public let action: Action
-        public let outcome: Outcome
+        public let status: Status
+        public let state: State?
         public let message: String?
         public let report: ErrorReport?
 
         public init(
             number: UInt,
             action: Action,
-            outcome: Outcome,
+            status: Status,
+            state: State? = nil,
             message: String? = nil,
             report: ErrorReport? = nil
         ) {
             self.number = number
             self.action = action
-            self.outcome = outcome
+            self.status = status
+            self.state = state
             self.message = message
             self.report = report
         }
@@ -31,7 +44,7 @@ public extension Recovery {
             capturing error: any Error,
             number: UInt,
             action: Action,
-            outcome: Outcome = .failed,
+            state: State? = nil,
             message: String? = nil
         ) {
             let report = error.report
@@ -39,7 +52,8 @@ public extension Recovery {
             self.init(
                 number: number,
                 action: action,
-                outcome: outcome,
+                status: .failed,
+                state: state,
                 message: message
                     ?? report.presentation.message,
                 report: report

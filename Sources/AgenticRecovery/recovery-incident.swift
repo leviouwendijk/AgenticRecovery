@@ -15,6 +15,13 @@ public extension Recovery {
         public let report: ErrorReport?
         public let metadata: [String: String]
 
+        public var state: State {
+            State(
+                effect: effectState,
+                retry: retrySafety
+            )
+        }
+
         public init(
             kind: Kind,
             stage: Stage,
