@@ -8,7 +8,9 @@ public extension Recovery {
     {
         public let kind: Kind
         public let stage: Stage
+        // rewrite symbol camelcase
         public let effectState: EffectState
+        // rewrite symbol camelcase
         public let retrySafety: RetrySafety
         public let scope: Scope
         public let message: String

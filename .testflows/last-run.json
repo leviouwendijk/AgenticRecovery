@@ -1,0 +1,132 @@
+{
+  "failed" : 0,
+  "failed_names" : [
+
+  ],
+  "generated_at" : "2026-09-13T20:55:13Z",
+  "passed" : 10,
+  "results" : [
+    {
+      "display_name" : "recovery-vocabulary",
+      "duration_seconds" : 0.00019788742065429688,
+      "name" : "recovery-vocabulary",
+      "status" : "passed",
+      "tags" : [
+        "agentic-recovery",
+        "identifiers",
+        "recovery",
+        "vocabulary"
+      ]
+    },
+    {
+      "display_name" : "recovery-codable-foundation",
+      "duration_seconds" : 0.00010597705841064453,
+      "name" : "recovery-codable-foundation",
+      "status" : "passed",
+      "tags" : [
+        "agentic-recovery",
+        "codable",
+        "io",
+        "recovery"
+      ]
+    },
+    {
+      "display_name" : "recovery-incident-semantics",
+      "duration_seconds" : 1.704692840576172e-05,
+      "name" : "recovery-incident-semantics",
+      "status" : "passed",
+      "tags" : [
+        "agentic-recovery",
+        "effects",
+        "incident",
+        "retry-safety"
+      ]
+    },
+    {
+      "display_name" : "recovery-policy-resolution",
+      "duration_seconds" : 5.1021575927734375e-05,
+      "name" : "recovery-policy-resolution",
+      "status" : "passed",
+      "tags" : [
+        "agentic-recovery",
+        "limits",
+        "plan",
+        "policy"
+      ]
+    },
+    {
+      "display_name" : "recovery-structured-error-evidence",
+      "duration_seconds" : 0.0008529424667358398,
+      "name" : "recovery-structured-error-evidence",
+      "status" : "passed",
+      "tags" : [
+        "agentic-recovery",
+        "attempt",
+        "errors",
+        "incident",
+        "report"
+      ]
+    },
+    {
+      "display_name" : "recovery-record-codable",
+      "duration_seconds" : 5.1021575927734375e-05,
+      "name" : "recovery-record-codable",
+      "status" : "passed",
+      "tags" : [
+        "agentic-recovery",
+        "attempt",
+        "codable",
+        "record"
+      ]
+    },
+    {
+      "display_name" : "recovery-state",
+      "duration_seconds" : 4.303455352783203e-05,
+      "name" : "recovery-state",
+      "status" : "passed",
+      "tags" : [
+        "agentic-recovery",
+        "reconciliation",
+        "state"
+      ]
+    },
+    {
+      "display_name" : "recovery-policy-specificity",
+      "duration_seconds" : 7.033348083496094e-06,
+      "name" : "recovery-policy-specificity",
+      "status" : "passed",
+      "tags" : [
+        "agentic-recovery",
+        "match",
+        "policy",
+        "specificity"
+      ]
+    },
+    {
+      "display_name" : "recovery-decision",
+      "duration_seconds" : 1.0728836059570312e-06,
+      "name" : "recovery-decision",
+      "status" : "passed",
+      "tags" : [
+        "agentic-recovery",
+        "decision",
+        "plan"
+      ]
+    },
+    {
+      "display_name" : "recovery-budget",
+      "duration_seconds" : 2.0265579223632812e-06,
+      "name" : "recovery-budget",
+      "status" : "passed",
+      "tags" : [
+        "agentic-recovery",
+        "budget",
+        "limits",
+        "loop-safety"
+      ]
+    }
+  ],
+  "skipped" : 0,
+  "title" : "AgenticRecovery flow tests",
+  "total" : 10
+}

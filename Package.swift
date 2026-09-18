@@ -14,12 +14,12 @@ let package = Package(
                 "AgenticRecovery",
             ]
         ),
-        .executable(
-            name: "arecovtest",
-            targets: [
-                "AgenticRecoveryTestFlows",
-            ]
-        ),
+        // .executable(
+        //     name: "arecovtest",
+        //     targets: [
+        //         "AgenticRecoveryTestFlows",
+        //     ]
+        // ),
     ],
     dependencies: [
         .package(
@@ -34,10 +34,10 @@ let package = Package(
             url: "https://github.com/leviouwendijk/Macros.git",
             branch: "master"
         ),
-        .package(
-            url: "https://github.com/leviouwendijk/TestFlows.git",
-            branch: "master"
-        ),
+        // .package(
+        //     url: "https://github.com/leviouwendijk/TestFlows.git",
+        //     branch: "master"
+        // ),
     ],
     targets: [
         .target(
@@ -57,20 +57,20 @@ let package = Package(
                 ),
             ]
         ),
-        .executableTarget(
-            name: "AgenticRecoveryTestFlows",
-            dependencies: [
-                "AgenticRecovery",
-                .product(
-                    name: "Errors",
-                    package: "Errors"
-                ),
-                .product(
-                    name: "TestFlows",
-                    package: "TestFlows"
-                ),
-            ]
-        ),
+        // .executableTarget(
+        //     name: "AgenticRecoveryTestFlows",
+        //     dependencies: [
+        //         "AgenticRecovery",
+        //         .product(
+        //             name: "Errors",
+        //             package: "Errors"
+        //         ),
+        //         .product(
+        //             name: "TestFlows",
+        //             package: "TestFlows"
+        //         ),
+        //     ]
+        // ),
     ],
     swiftLanguageModes: [
         .v6,
